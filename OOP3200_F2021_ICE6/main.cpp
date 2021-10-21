@@ -1,7 +1,14 @@
+/* @file	OOP3200_F2021_ICE6 - main.cpp
+ * @author	Russell Waring
+ * @stuID	100528426
+ * @date	2021-10-20
+ * @desc	A modified version of the main.cpp/ entry point file,
+ *			following from the exercise.
+ */
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <fstream> // for ofstream
+#include <fstream> // for ofstream, ifstream
 #include <cstdlib> // for exit functions
 
 #include <vector>

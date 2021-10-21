@@ -22,17 +22,22 @@ GameObject::GameObject(const int id, const float x, const float y)
 GameObject::GameObject(const int id, const Vector2D<float>& position)
 {
 	SetID(id);
+	SetName("not set");
 	SetPosition(position);
 }
 
-GameObject::GameObject(std::string name, const int id, const float x, const float y) // name should be const, and reference
-	:m_id(id), m_name(std::move(name)), m_position(Vector2D<float>(x, y))
+GameObject::GameObject(const std::string& name, const int id, const float x, const float y) // name should be const, and reference
 {
+	SetID(id);
+	SetName(name);
+	SetPosition(x, y);
 }
 
-GameObject::GameObject(std::string name, const int id, const Vector2D<float>& position) // id should be const
-	: m_id(id), m_name(std::move(name)), m_position(position) // is already a Vector2D, pass in
+GameObject::GameObject(const std::string& name, const int id, const Vector2D<float>& position) // id should be const
 {
+	SetID(id);
+	SetName(name);
+	SetPosition(position);
 }
 
 std::string GameObject::GetName() const // should be const
@@ -90,6 +95,16 @@ std::string GameObject::ToString() const
 {
 	std::string output_string;
 	output_string += "ID       : " + std::to_string(GetID()) + "\n";
+	output_string += "Name     : " + GetName() + "\n";						// added name to ToString method
 	output_string += "Position : " + GetPosition().ToString() + "\n";
 	return output_string;
+}
+
+std::string GameObject::ToFile() const
+{
+	//std::string output_string;
+	//output_string += std::to_string(GetID()) + " " + GetName() + " " + GetPosition().ToString();
+	//return output_string;
+
+	return std::to_string(GetID()) + " " + GetName() + " " + GetPosition().ToString();
 }

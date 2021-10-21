@@ -19,8 +19,8 @@ public:
 	GameObject();
 	GameObject(int id, float x, float y);
 	GameObject(int id, const Vector2D<float>& position);
-	GameObject(std::string name, int id, float x, float y); // two new overloaded constructors to accomodate name member
-	GameObject(std::string name, int id, const Vector2D<float>& position);
+	GameObject(const std::string& name, int id, float x, float y); // two new overloaded constructors to accomodate name member
+	GameObject(const std::string& name, int id, const Vector2D<float>& position);
 
 
 	// Rule of Three
@@ -41,6 +41,7 @@ public:
 
 	// Utility Functions
 	std::string ToString() const;
+	std::string ToFile() const; // similar to ToString but formatted differently
 	
 private:
 	int m_id{};

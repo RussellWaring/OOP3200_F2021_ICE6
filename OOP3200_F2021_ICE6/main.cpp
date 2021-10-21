@@ -1,6 +1,8 @@
 #include <iomanip>
 #include <iostream>
 #include <map>
+#include <fstream> // for ofstream
+#include <cstdlib> // for exit functions
 
 #include <vector>
 
@@ -8,7 +10,7 @@
 #include "Vector3D.h"
 
 
-static void BuildGameObjects(std::vector<GameObject*>& game_objects, const int num = 2)
+void BuildGameObjects(std::vector<GameObject*>& game_objects, const int num = 2)
 {
 	for (auto count = 0; count < num; ++count)
 	{
@@ -28,35 +30,81 @@ static void BuildGameObjects(std::vector<GameObject*>& game_objects, const int n
 	
 }
 
-static void CompareGameObjects(GameObject* object1, GameObject* object2)
-{
-	std::cout << std::fixed << std::setprecision(3);
-	std::cout << "Magnitude of first gameObject is: " << object1->GetPosition().GetMagnitude() << std::endl;
-	std::cout << "Magnitude of second gameObject is: " << object2->GetPosition().GetMagnitude() << std::endl;
-	std::cout << "Distance between first gameObject and second gameObject is: "
-		<< Vector2D<float>::Distance(object1->GetPosition(), object2->GetPosition()) << std::endl;
-	std::cout << "--------------------------------------------------------------\n" << std::endl;
-
-	std::cout << "The angle (in degrees) from the first gameObject to the second gameObject is: "
-		<< Vector2D<float>::SignedAngle(object1->GetPosition(), object2->GetPosition()) << std::endl;
-
-	std::cout << "--------------------------------------------------------------\n" << std::endl;
-	std::cout << "First Game Object Details:" << std::endl;
-	std::cout << object1->ToString() << std::endl;
-
-	std::cout << "Second Game Object Details:" << std::endl;
-	std::cout << object2->ToString() << std::endl;
-}
-
-
-
 int main()
 {
-	std::map<std::string, GameObject> gameObjects; // a map of type GameObject, with a friendly name. A key-value pair. Key is string, value is GameObject
+	std::map<std::string, GameObject*> gameObjects; // a map of type GameObject, with a friendly name. A key-value pair. Key is string, value is GameObject* (pointers)
+
+	auto* ship = new GameObject("Ship", 0, 3.0f, 4.0f);
+	auto* enemy = new GameObject("Enemy", 1, 10.0f, 20.0f);
 
 
+	//gameObjects["ship"] = ship; // Add to map. Creating an association between key ("ship") and the value (ship) - a reference to the ship itself, the object
+	//make the key the name of the object already declared:
+	gameObjects[ship->GetName()] = ship;
+	gameObjects[enemy->GetName()] = enemy;
 
+	// Want to be able to loop. Range based for loop
+	// "for every game_object in gameObjects....loop"
+	for (const auto& game_object : gameObjects)
+	{
+		std::cout << "Key   : " << game_object.first << std::endl;
+		std::cout << "Value : " << std::endl;
+		std::cout << "---------------------------------" << std::endl;
+		std::cout << game_object.second->ToString() << std::endl; // want to convert the object itself. No overloaded operator / friend class.
+	}
 
+	// find the distance between the two objects:
+	// auto distance = Vector2D<float>::Distance(ship->GetPosition(), enemy->GetPosition()); --------------------------------------------- distance between objects
+	auto distance = Vector2D<float>::Distance(gameObjects["Ship"]->GetPosition(), gameObjects["Enemy"]->GetPosition()); // - accessing obj stored in map
+
+	std::cout << "Distance between " << gameObjects["Ship"]->GetName() << " and " << gameObjects["Enemy"]->GetName() << " is " << std::to_string(distance) << std::endl;
+
+	std::ofstream outfile("GameObject.txt", std::ios::out);
+	outfile << gameObjects["Ship"]->ToFile() << std::endl;
+	//outfile << gameObjects["Enemy"]->GetID() << " " << gameObjects["Enemy"]->GetName() << " " << gameObjects["Enemy"]->GetPosition() << std::endl;
+	outfile << gameObjects["Enemy"]->ToFile() << std::endl;
+	outfile.close(); // close the outfile!
+
+	std::cout << "-------------------------------------\n";
+	std::cout << "END OF OUTPUT \n";
+	std::cout << "-------------------------------------\n\n";
+
+	std::cout << "-------------------------------------\n";
+	std::cout << "START OF INPUT \n";
+	std::cout << "-------------------------------------\n\n"; // banners
+
+	std::ifstream infile("GameObject.txt", std::ios::in);
+
+	//while(!infile.eof()) - loop not closing
+	while(infile >> new GameObject())
+	{
+		int id;
+		float x, y = 0;
+		std::string name;
+		Vector2D<float> position;
+
+		infile >> id >> name;
+		infile.ignore();
+		infile >> x;
+		infile.ignore();
+		infile >> y;
+		infile.ignore();
+		// Read it all in, create GameObject. If going into map, has to be type pointer
+		auto* temp_object = new GameObject(name, id, x, y);
+
+		gameObjects[name + " 2"] = temp_object;
+
+		std::cout << "Read Operation" << std::endl;
+	}
+	infile.close(); // close the infile!
+
+	for (const auto& game_object : gameObjects)
+	{
+		std::cout << "Key   : " << game_object.first << std::endl;
+		std::cout << "Value : " << std::endl;
+		std::cout << "---------------------------------" << std::endl;
+		std::cout << game_object.second->ToString() << std::endl; // want to convert the object itself. No overloaded operator / friend class.
+	}
 
 
 

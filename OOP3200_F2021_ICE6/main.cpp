@@ -10,24 +10,19 @@
 #include "Vector3D.h"
 
 
-void BuildGameObjects(std::vector<GameObject*>& game_objects, const int num = 2)
+void PrintGameObjects(const std::map<std::string, GameObject*>& game_objects) // from the updated repo
 {
-	for (auto count = 0; count < num; ++count)
+	std::cout << "-------------------------------------\n";
+	std::cout << "Output map of Game Objects\n";
+	std::cout << "-------------------------------------\n\n";
+
+	for (const auto& game_object : game_objects)
 	{
-		int id;
-		std::cout << "Enter the gameObject's ID: ";
-		std::cin >> id;
-		Vector2D<float> point;
-		std::cout << "Enter the gameObject's Position (x, y): ";
-		std::cin >> point;
-		std::cout << "\n--------------------------------------------------------------" << std::endl;
-		std::cout << "You Entered " << id << " for the gameObject's ID " << std::endl;
-		std::cout << "You Entered " << point << " for the gameObject's Position" << std::endl;
-		std::cout << "--------------------------------------------------------------\n" << std::endl;
-		auto* gameObject = new GameObject(id, point);
-		game_objects.push_back(gameObject);
+		std::cout << "Key   : " << game_object.first << std::endl;
+		std::cout << "-----------------------------" << std::endl;
+		std::cout << game_object.second->ToString();
+		std::cout << "-----------------------------" << std::endl;
 	}
-	
 }
 
 int main()
@@ -73,61 +68,41 @@ int main()
 	std::cout << "START OF INPUT \n";
 	std::cout << "-------------------------------------\n\n"; // banners
 
-	std::ifstream infile("GameObject.txt", std::ios::in);
+	std::ifstream infile;
+	std::string fileName = "GameObject.txt";
+
+	infile.open(fileName.c_str()); // c_str?
 
 	//while(!infile.eof()) - loop not closing
-	while(infile >> new GameObject())
+	while(infile.is_open())
 	{
 		int id;
-		float x, y = 0;
+		float x, y;
 		std::string name;
-		Vector2D<float> position;
 
-		infile >> id >> name;
-		infile.ignore();
-		infile >> x;
-		infile.ignore();
-		infile >> y;
-		infile.ignore();
-		// Read it all in, create GameObject. If going into map, has to be type pointer
-		auto* temp_object = new GameObject(name, id, x, y);
+		while (!infile.fail())
+		{
+			infile >> id >> name;
+			infile.ignore(1, ' ');
+			infile.ignore(1, '(');
+			infile >> x;
+			infile.ignore(1, ',');
+			infile.ignore(1, ' ');
+			infile >> y;
+			infile.ignore(1, ')');
+			// Read it all in, create GameObject. If going into map, has to be type pointer
+			auto* temp_object = new GameObject(name, id, x, y);
 
-		gameObjects[name + " 2"] = temp_object;
-
-		std::cout << "Read Operation" << std::endl;
-	}
-	infile.close(); // close the infile!
-
-	for (const auto& game_object : gameObjects)
-	{
-		std::cout << "Key   : " << game_object.first << std::endl;
-		std::cout << "Value : " << std::endl;
-		std::cout << "---------------------------------" << std::endl;
-		std::cout << game_object.second->ToString() << std::endl; // want to convert the object itself. No overloaded operator / friend class.
+			gameObjects[name + " 1"] = temp_object;
+		}
+		infile.close();
 	}
 
+	PrintGameObjects(gameObjects);
 
+	std::cout << "-------------------------------------\n";
+	std::cout << "END OF INPUT \n";
+	std::cout << "-------------------------------------\n\n";
 
-	//std::vector<GameObject*> gameObjects;
-
-	//int num_of_GO;
-	//std::cout << "How Many Game Objects do you need?: ";
-	//std::cin >> num_of_GO;
-	//std::cout << "\n--------------------------------------------------------------" << std::endl;
-
-	//BuildGameObjects(gameObjects, num_of_GO);
-	//
-	//
-	//int index1;
-	//std::cout << "What is the First Object index?: ";
-	//std::cin >> index1;
-	//std::cout << "\n--------------------------------------------------------------" << std::endl;
-	//int index2;
-	//std::cout << "What is the Second Object index?: ";
-	//std::cin >> index2;
-	//std::cout << "\n--------------------------------------------------------------" << std::endl;
-	//
-	//CompareGameObjects(gameObjects[index1], gameObjects[index2]);
-	//CompareGameObjects(gameObjects[index1], gameObjects[index2]);
 }
 
